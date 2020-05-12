@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Hands-on template for EC2
+
+Parameters:
+  VPCStack:
+    Type: String
+    Default: monitoring-1-vpc
+  EC2InstanceType:
+    Type: String
+    Default: t2.micro
+  EC2AMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Resources:
+  EC2WebServer01:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-WebServer01
+      ImageId: !Ref EC2AMI
+      InstanceType: !Ref EC2InstanceType
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: '0'
+          SubnetId:
+            Fn::ImportValue: !Sub ${VPCStack}-PublicSubnet1
+          GroupSet:
+            - !Ref SecurityGroupWebServer
+      UserData: !Base64 | 
+        #! /bin/bash
+        yum update -y
+        amazon-linux-extras install php7.2 -y
+        yum -y install mysql httpd php-mbstring php-xml
+        
+        wget http://ja.wordpress.org/latest-ja.tar.gz -P /tmp/
+        tar zxvf /tmp/latest-ja.tar.gz -C /tmp
+        cp -r /tmp/wordpress/* /var/www/html/
+        touch /var/www/html/.check_alive
+        chown apache:apache -R /var/www/html
+        
+        systemctl enable httpd.service
+        systemctl start httpd.service
+        
+  SecurityGroupWebServer:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      VpcId:
+        Fn::ImportValue: !Sub ${VPCStack}-VPCID
+      GroupName: !Sub ${AWS::StackName}-WebServer
+      GroupDescription: !Sub ${AWS::StackName}-WebServer
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-WebServer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/16
+
+  EC2WebServer02:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-WebServer02
+      ImageId: !Ref EC2AMI
+      InstanceType: !Ref EC2InstanceType
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: '0'
+          SubnetId:
+            Fn::ImportValue: !Sub ${VPCStack}-PublicSubnet2
+          GroupSet:
+            - !Ref SecurityGroupWebServer
+      UserData: !Base64 | 
+        #! /bin/bash
+        yum update -y
+        amazon-linux-extras install php7.2 -y
+        yum -y install mysql httpd php-mbstring php-xml
+        
+        wget http://ja.wordpress.org/latest-ja.tar.gz -P /tmp/
+        tar zxvf /tmp/latest-ja.tar.gz -C /tmp
+        cp -r /tmp/wordpress/* /var/www/html/
+        touch /var/www/html/.check_alive
+        chown apache:apache -R /var/www/html
+        
+        systemctl enable httpd.service
+        systemctl start httpd.service
+        
+  SecurityGroupWebServer:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      VpcId:
+        Fn::ImportValue: !Sub ${VPCStack}-VPCID
+      GroupName: !Sub ${AWS::StackName}-WebServer
+      GroupDescription: !Sub ${AWS::StackName}-WebServer
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-WebServer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/16
+
+Outputs:
+  EC2WebServer01:
+    Value: !Ref EC2WebServer01
+    Export:
+      Name: !Sub ${AWS::StackName}-EC2WebServer01
+
+  EC2WebServer02:
+    Value: !Ref EC2WebServer02
+    Export:
+      Name: !Sub ${AWS::StackName}-EC2WebServer02
