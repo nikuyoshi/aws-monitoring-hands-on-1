@@ -11,7 +11,7 @@ create_stacks () {
     aws cloudformation wait stack-create-complete --stack-name monitoring-1-vpc --region $region --profile $profile
 
     echo "Create EC2 stack"
-    aws cloudformation create-stack --stack-name monitoring-1-ec2 --template-body file://monitoring-1-ec2.yaml --region $region --profile $profile
+    aws cloudformation create-stack --stack-name monitoring-1-ec2 --template-body file://monitoring-1-ec2.yaml --capabilities CAPABILITY_NAMED_IAM --region $region --profile $profile
     aws cloudformation wait stack-create-complete --stack-name monitoring-1-ec2 --region $region --profile $profile
 
     echo "Create ALB stack"

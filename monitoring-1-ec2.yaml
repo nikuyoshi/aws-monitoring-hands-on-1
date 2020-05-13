@@ -48,6 +48,7 @@ Resources:
         wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
         sudo systemctl restart amazon-cloudwatch-agent
       IamInstanceProfile: !Ref IAMInstanceProfile
+    DependsOn: IAMInstanceProfile
         
   EC2WebServer02:
     Type: AWS::EC2::Instance
@@ -82,8 +83,10 @@ Resources:
         wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/arm64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
         sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
         wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
+        mv /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default /opt/aws/amazon-cloudwatch-agent/etc/
         sudo systemctl restart amazon-cloudwatch-agent
       IamInstanceProfile: !Ref IAMInstanceProfile
+    DependsOn: IAMInstanceProfile
 
   SecurityGroupWebServer:
     Type: AWS::EC2::SecurityGroup
@@ -109,19 +112,19 @@ Resources:
           ToPort: 80
           CidrIp: 10.0.0.0/16
 
-          
   Monitoring1EC2RoleforSSM:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-        - Action: sts:AssumeRole
+        - Action: 'sts:AssumeRole'
           Effect: Allow
           Principal:
             Service: ec2.amazonaws.com
       Description: Allows EC2 instances to call AWS services on your behalf.
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
       MaxSessionDuration: 3600
       Path: "/"
       RoleName: Monitoring1EC2RoleforSSM
@@ -129,7 +132,7 @@ Resources:
   IAMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      Roles: !Ref Monitoring1EC2RoleforSSM
+      Roles: [ !Ref Monitoring1EC2RoleforSSM ]
       Path: "/"
 
 Outputs:
