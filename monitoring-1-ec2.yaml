@@ -42,27 +42,13 @@ Resources:
         
         systemctl enable httpd.service
         systemctl start httpd.service
-        
-  SecurityGroupWebServer:
-    Type: AWS::EC2::SecurityGroup
-    Properties: 
-      VpcId:
-        Fn::ImportValue: !Sub ${VPCStack}-VPCID
-      GroupName: !Sub ${AWS::StackName}-WebServer
-      GroupDescription: !Sub ${AWS::StackName}-WebServer
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-WebServer
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 10.0.0.0/16
 
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/arm64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
+        sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
+        wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
+        sudo systemctl restart amazon-cloudwatch-agent
+      IamInstanceProfile: !Ref IAMInstanceProfile
+        
   EC2WebServer02:
     Type: AWS::EC2::Instance
     Properties:
@@ -92,7 +78,13 @@ Resources:
         
         systemctl enable httpd.service
         systemctl start httpd.service
-        
+
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/arm64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
+        sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
+        wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
+        sudo systemctl restart amazon-cloudwatch-agent
+      IamInstanceProfile: !Ref IAMInstanceProfile
+
   SecurityGroupWebServer:
     Type: AWS::EC2::SecurityGroup
     Properties: 
@@ -109,9 +101,36 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 10.0.0.0/16
+
+          
+  Monitoring1EC2RoleforSSM:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: ec2.amazonaws.com
+      Description: Allows EC2 instances to call AWS services on your behalf.
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      MaxSessionDuration: 3600
+      Path: "/"
+      RoleName: Monitoring1EC2RoleforSSM
+
+  IAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: !Ref Monitoring1EC2RoleforSSM
+      Path: "/"
 
 Outputs:
   EC2WebServer01:

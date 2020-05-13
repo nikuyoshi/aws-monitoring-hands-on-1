@@ -76,11 +76,11 @@ Resources:
 
   PublicRoute:
     Type: AWS::EC2::Route
-    DependsOn: CFnVPCIGW
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref CFnVPCIGW
+    DependsOn: CFnVPCIGW
 
   PublicSubnet1Assoc:
     Type: AWS::EC2::SubnetRouteTableAssociation

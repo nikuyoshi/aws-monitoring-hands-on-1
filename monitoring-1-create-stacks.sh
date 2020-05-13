@@ -19,7 +19,7 @@ create_stacks () {
     aws cloudformation wait stack-create-complete --stack-name monitoring-1-alb --region $region --profile $profile
 
     echo "Create RDS stack"
-    aws cloudformation create-stack --stack-name monitoring-1-rds --template-body file://monitoring-1-alb.yaml --region $region --profile $profile
+    aws cloudformation create-stack --stack-name monitoring-1-rds --template-body file://monitoring-1-rds.yaml --region $region --profile $profile
     aws cloudformation wait stack-create-complete --stack-name monitoring-1-rds --region $region --profile $profile
 }
 
