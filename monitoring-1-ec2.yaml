@@ -82,8 +82,8 @@ Resources:
 
         wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/arm64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
         sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
-        wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
-        mv /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default /opt/aws/amazon-cloudwatch-agent/etc/
+        mv /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default /home/ec2-user/
+        wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/
         sudo systemctl restart amazon-cloudwatch-agent
       IamInstanceProfile: !Ref IAMInstanceProfile
     DependsOn: IAMInstanceProfile
