@@ -42,6 +42,8 @@ Resources:
       Targets:
         - Id:
             Fn::ImportValue: !Sub ${EC2Stack}-EC2WebServer01
+        - Id:
+            Fn::ImportValue: !Sub ${EC2Stack}-EC2WebServer02
 
   SecurityGroupLB:
     Type: AWS::EC2::SecurityGroup
