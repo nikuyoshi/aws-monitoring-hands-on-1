@@ -45,8 +45,9 @@ Resources:
 
         wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
         sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
-        sudo wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/
-        sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start
+        mv /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default /home/ec2-user/
+        wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/
+        sudo systemctl restart amazon-cloudwatch-agent
       IamInstanceProfile: !Ref IAMInstanceProfile
     DependsOn: IAMInstanceProfile
         
@@ -80,7 +81,7 @@ Resources:
         systemctl enable httpd.service
         systemctl start httpd.service
 
-        wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/arm64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm -P /tmp/
         sudo rpm -U /tmp/amazon-cloudwatch-agent.rpm
         mv /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default /home/ec2-user/
         wget https://raw.githubusercontent.com/nikuyoshi/aws-monitoring-hands-on-1/master/amazon-cloudwatch-agent.json -P /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/
@@ -100,17 +101,13 @@ Resources:
           Value: !Sub ${AWS::StackName}-WebServer
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 10.0.0.0/16
+          CidrIp: 0.0.0.0/0
 
   Monitoring1EC2RoleforSSM:
     Type: AWS::IAM::Role
