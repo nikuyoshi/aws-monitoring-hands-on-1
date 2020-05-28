@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Hands-on template for VPC
+Description: AWS Hands-on for Beginners monitoing-1 template
 
 Parameters:
   EC2InstanceType:
