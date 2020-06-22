@@ -263,7 +263,7 @@ Resources:
       HealthCheckPath: /.check_alive
       Targets:
         - Id: !Ref EC2WebServer01
-        # - Id: !Ref EC2WebServer02
+        - Id: !Ref EC2WebServer02
 
   SecurityGroupLB:
     Type: AWS::EC2::SecurityGroup
