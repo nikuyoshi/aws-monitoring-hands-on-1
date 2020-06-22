@@ -37,6 +37,7 @@ Resources:
       CidrBlock: 10.0.0.0/24
       VpcId: !Ref CFnVPC
       AvailabilityZone: !Select [0, !GetAZs ]
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: PublicSubnet1
@@ -47,6 +48,7 @@ Resources:
       CidrBlock: 10.0.1.0/24
       VpcId: !Ref CFnVPC
       AvailabilityZone: !Select [1, !GetAZs ]
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: PublicSubnet2
