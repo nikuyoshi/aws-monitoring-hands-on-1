@@ -345,13 +345,13 @@ Outputs:
   EC2WebServer01:
     Value: !Ref EC2WebServer01
 
-  EC2WebServer01IP:
+  EC2WebServer01DNS:
     Value: !GetAtt EC2WebServer01.PublicDnsName
 
   EC2WebServer02:
     Value: !Ref EC2WebServer02
 
-  EC2WebServer02IP:
+  EC2WebServer02DNS:
     Value: !GetAtt EC2WebServer02.PublicDnsName
 
   FrontLBEndpoint:
