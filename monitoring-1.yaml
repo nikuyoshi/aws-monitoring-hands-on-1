@@ -208,7 +208,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 10.0.0.0/16
+          CidrIp: 0.0.0.0/0
 
   Monitoring1EC2RoleforSSM:
     Type: AWS::IAM::Role
@@ -345,8 +345,17 @@ Outputs:
   EC2WebServer01:
     Value: !Ref EC2WebServer01
 
+  EC2WebServer01IP:
+    Value: !GetAtt EC2WebServer01.PublicDnsName
+
   EC2WebServer02:
     Value: !Ref EC2WebServer02
 
+  EC2WebServer02IP:
+    Value: !GetAtt EC2WebServer02.PublicDnsName
+
   FrontLBEndpoint:
     Value: !GetAtt FrontLB.DNSName
+
+  RDSEndpointAddress:
+    Value: !GetAtt DBInstance.Endpoint.Address
